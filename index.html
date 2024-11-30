@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Attendance Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+<body>
+    <div class="min-h-screen">
+        <nav class="bg-white shadow-sm">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <h1 class="text-xl font-bold text-gray-800">College Attendance Manager</h1>
+                    <div id="date" class="text-gray-600"></div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="container mx-auto px-4 py-8">
+            <div class="mb-8 flex flex-wrap gap-4">
+                <button onclick="showSection('students')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                    <i class="bi bi-people-fill mr-2"></i>Manage Students
+                </button>
+                <button onclick="showSection('subjects')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                    <i class="bi bi-book-fill mr-2"></i>Manage Subjects
+                </button>
+                <button onclick="showSection('timetable')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                    <i class="bi bi-calendar-week mr-2"></i>Timetable
+                </button>
+                <button onclick="showSection('attendance')" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                    <i class="bi bi-check-circle-fill mr-2"></i>Mark Attendance
+                </button>
+            </div>
+
+            <!-- Students Section -->
+            <div id="students" class="section hidden">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4">Add New Student</h2>
+                    <form id="studentForm" class="space-y-4">
+                        <div>
+                            <input type="text" id="studentName" placeholder="Student Name" class="w-full p-2 border rounded" required>
+                        </div>
+                        <div>
+                            <input type="text" id="rollNo" placeholder="Roll Number" class="w-full p-2 border rounded" required>
+                        </div>
+                        <button type="submit" class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600">Add Student</button>
+                    </form>
+                </div>
+                <div id="studentsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+
+
+            <!-- Subjects Section -->
+            <div id="subjects" class="section hidden">
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4">Add New Subject</h2>
+                    <form id="subjectForm" class="space-y-4">
+                        <div>
+                            <input type="text" id="subjectName" placeholder="Subject Name" class="w-full p-2 border rounded" required>
+                        </div>
+                        <div>
+                            <input type="text" id="subjectCode" placeholder="Subject Code" class="w-full p-2 border rounded" required>
+                        </div>
+                        <div>
+                            <input type="text" id="teacherName" placeholder="Teacher Name" class="w-full p-2 border rounded" required>
+                        </div>
+                        <button type="submit" class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600">Add Subject</button>
+                    </form>
+                </div>
+                <div id="subjectsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+
+            <!-- Timetable Section -->
+            <div id="timetable" class="section hidden">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold mb-4">Weekly Timetable</h2>
+                    <div class="mb-4">
+                        <button onclick="addTimeSlot()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                            Add Time Slot
+                        </button>
+                        <button onclick="deleteAllTimeSlots()" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                            Delete All Time Slots
+                          </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="p-4 border">Time/Day</th>
+                                    <th class="p-4 border">Monday</th>
+                                    <th class="p-4 border">Tuesday</th>
+                                    <th class="p-4 border">Wednesday</th>
+                                    <th class="p-4 border">Thursday</th>
+                                    <th class="p-4 border">Friday</th>
+                                </tr>
+                            </thead>
+                            <tbody id="timetableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Section -->
+            <div id="attendance" class="section hidden">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl font-semibold mb-4">Mark Attendance</h2>
+                    <div class="mb-4">
+                        <select id="subjectSelect" class="w-full p-2 border rounded mb-4" onchange="loadAttendanceView()">
+                            <option value="">Select Subject</option>
+                        </select>
+                        <input type="date" id="attendanceDate" class="w-full p-2 border rounded" onchange="loadAttendanceView()">
+                    </div>
+                    <div id="attendanceList" class="space-y-4"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Timetable Slot -->
+    <div id="timetableModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-white p-6 rounded-lg w-96">
+            <h3 class="text-lg font-semibold mb-4">Add Time Slot</h3>
+            <div class="space-y-4">
+                <div>
+                    <label>Time Slot</label>
+                    <div class="flex space-x-2">
+                        <input type="time" id="startTime" class="p-2 border rounded">
+                        <span class="self-center">to</span>
+                        <input type="time" id="endTime" class="p-2 border rounded">
+                    </div>
+                </div>
+                <div id="modalSubjectSelects"></div>
+                <div class="flex justify-end space-x-2">
+                    <button onclick="closeTimetableModal()" class="px-4 py-2 bg-gray-200 rounded">Cancel</button>
+                    <button onclick="saveTimetableSlot()" class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
